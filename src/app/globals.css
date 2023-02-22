@@ -3,5 +3,49 @@
 @tailwind utilities;
 
 body{
-    @apply bg-gradient-to-tr from-green-50 to-slate-100 via-blue-50 h-[100vh];
+    @apply bg-gradient-to-tr from-green-50 to-slate-100 via-blue-50 h-[100vh] text-slate-900;
+}
+
+@keyframes scrollX {
+    from{
+        transform: translateX(0vw);
+    }
+    to{
+        transform: translateX(140vw);
+    }
+}
+
+
+@keyframes scrollY {
+    from{
+        transform: translateY(-100vh);
+    }
+    to{
+        transform: translateY(100vh);
+    }
+}
+
+.scrollLeft{
+    animation-name: scrollX;
+    animation-timing-function: linear;
+    animation-direction: reverse;
+    animation-iteration-count: infinite;
+}
+
+.scrollRight{
+    animation-name: scrollX;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+}
+
+.scrollUp{
+    animation-name: scrollY;
+    animation-timing-function: linear;
+    animation-direction: reverse;
+    animation-iteration-count: infinite;
+}
+.scrollDown{
+    animation-name: scrollY;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
 }
