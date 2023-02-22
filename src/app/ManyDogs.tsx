@@ -1,10 +1,12 @@
 'use client'
 import DogImageScrolling from "@/app/DogImageScroll";
-import React, {useEffect, useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
+import {Breed} from "@/app/DogDropDown";
 
 interface Props {
-    dogCount:number;
-    class:string;
+    dogCount:number,
+    class:string,
+    filteredBreeds:Breed[],
 }
 
 export default function ManyDogs(props:Props){
@@ -17,7 +19,7 @@ export default function ManyDogs(props:Props){
         return Math.floor(Math.random() * (max - min + 1) + min); // The maximum is inclusive and the minimum is inclusive
     }
 
-    function getDogs(){
+    let getDogs = useCallback(()=>{
         let dogs : JSX.Element[] = [];
         for(let i=0;i<dogImages.length;i++){
             let speedDeviation = getRandomInt(-10000,10000)
@@ -27,13 +29,34 @@ export default function ManyDogs(props:Props){
             dogs.push(DogImageScrolling({deviation:{x:xDeviation,y:yDeviation}, key: i,alt: "", class: `${props.class} drop-shadow-lg`, src: dogImages[i], style: {animationDuration:`${30000+speedDeviation}ms`,animationDelay:`${(-i*4000+delayDeviation).toString()}ms`}}))
         }
         return dogs;
-    }
+        },[dogImages, props.class])
+
 
     useEffect(()=>{
-        fetch(`api/dog/breeds/image/random/${props.dogCount}`)
-            .then(res => res.json())
-            .then(json => {setDogImages(json['message'])})
-    },[props.dogCount])
+
+    },[])
+
+    useEffect(()=>{
+        console.log("updating dog images")
+        if(props.filteredBreeds.length == 0){
+            fetch(`api/dog/breeds/image/random/${props.dogCount}`)
+                .then(res => res.json())
+                .then(json => {setDogImages(json['message'])})
+        }
+        else {
+            let eachBreed = Math.floor(props.dogCount / props.filteredBreeds.length)
+            setDogImages([])
+            for(let Breed in props.filteredBreeds){
+                console.log(`api/dog/breed/${props.filteredBreeds[Breed].value}/images/random/${eachBreed}`)
+                fetch(`api/dog/breed/${props.filteredBreeds[Breed].value}/images/random/${eachBreed}`)
+                    .then(res => res.json())
+                    .then(json => {
+                        console.log(json["message"])
+                        setDogImages(prevState => (prevState.concat(json["message"])))
+                    })
+            }
+        }
+    },[props.dogCount, props.filteredBreeds])
 
 
     return(
