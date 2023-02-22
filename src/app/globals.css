@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 body{
-    @apply bg-gradient-to-tr from-green-50 to-slate-100 via-blue-50 h-[100vh] text-slate-900;
+    @apply bg-gradient-to-tr from-green-100 to-slate-100 via-blue-100 h-[100vh] text-slate-900;
 }
 
 @keyframes scrollX {
@@ -48,4 +48,8 @@ body{
     animation-name: scrollY;
     animation-timing-function: linear;
     animation-iteration-count: infinite;
+}
+
+.dirButton{
+    @apply shadow-md w-12 mx-auto bg-gray-100;
 }

@@ -1,7 +1,8 @@
 import Image from "next/image";
-import {CSSProperties, useEffect} from "react";
+import {CSSProperties} from "react";
 
 interface Props{
+    key:number,
     src:string,
     alt:string
     class:string;
@@ -9,7 +10,7 @@ interface Props{
 }
 export default function DogImageScrolling(props:Props){
     return(
-        <div className={props.class} style={props.style}>
+        <div className={props.class} style={props.style} key={props.key}>
             <Image src={props.src} alt={props.alt} width={200} height={200}/>
         </div>
     )

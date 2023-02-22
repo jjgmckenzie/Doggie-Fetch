@@ -11,10 +11,18 @@ export default function ManyDogs(props:Props){
 
     const [dogImages, setDogImages] = useState([''])
 
+    function getRandomInt(min:number, max:number) {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        return Math.floor(Math.random() * (max - min + 1) + min); // The maximum is inclusive and the minimum is inclusive
+    }
+
     function getDogs(){
         let dogs : JSX.Element[] = [];
         for(let i=0;i<dogImages.length;i++){
-            dogs.push(DogImageScrolling({alt: "", class: props.class, src: dogImages[i], style: {animationDuration:"30000ms",animationDelay:`${(i*4000).toString()}ms`}}))
+            let speedDeviation = getRandomInt(-10000,10000)
+            let delayDeviation = getRandomInt(-1000,10000)
+            dogs.push(DogImageScrolling({key: i,alt: "", class: `${props.class} drop-shadow-lg`, src: dogImages[i], style: {animationDuration:`${30000+speedDeviation}ms`,animationDelay:`${(-i*4000+delayDeviation).toString()}ms`}}))
         }
         return dogs;
     }
@@ -25,9 +33,10 @@ export default function ManyDogs(props:Props){
             .then(json => {setDogImages(json['message'])})
     },[props.dogCount])
 
+
     return(
-        <div className="fixed -left-72 w-full">
-            <div className="absolute h-full -z-10">
+        <div className="fixed w-full h-full -z-10">
+            <div className="absolute grid w-full h-full top-0 left-0 grid-cols-8 grid-rows-8 gap-2">
                 {getDogs()}
             </div>
         </div>
