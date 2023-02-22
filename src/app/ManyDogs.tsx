@@ -22,7 +22,9 @@ export default function ManyDogs(props:Props){
         for(let i=0;i<dogImages.length;i++){
             let speedDeviation = getRandomInt(-10000,10000)
             let delayDeviation = getRandomInt(-1000,10000)
-            dogs.push(DogImageScrolling({key: i,alt: "", class: `${props.class} drop-shadow-lg`, src: dogImages[i], style: {animationDuration:`${30000+speedDeviation}ms`,animationDelay:`${(-i*4000+delayDeviation).toString()}ms`}}))
+            let xDeviation = getRandomInt(-100,+100)
+            let yDeviation = getRandomInt(-100,+100)
+            dogs.push(DogImageScrolling({deviation:{x:xDeviation,y:yDeviation}, key: i,alt: "", class: `${props.class} drop-shadow-lg`, src: dogImages[i], style: {animationDuration:`${30000+speedDeviation}ms`,animationDelay:`${(-i*4000+delayDeviation).toString()}ms`}}))
         }
         return dogs;
     }
