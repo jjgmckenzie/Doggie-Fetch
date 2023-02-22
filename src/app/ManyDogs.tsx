@@ -30,7 +30,7 @@ export default function ManyDogs(props:Props){
     }
 
     useEffect(()=>{
-        fetch(`api/breeds/image/random/${props.dogCount}`)
+        fetch(`api/dog/breeds/image/random/${props.dogCount}`)
             .then(res => res.json())
             .then(json => {setDogImages(json['message'])})
     },[props.dogCount])

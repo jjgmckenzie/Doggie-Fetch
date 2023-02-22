@@ -2,7 +2,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 
 function dogApiProxy(req :string) : Promise<JSON>{
-  return fetch(`https://dog.ceo${req}`).then( res => res.json())
+  let proxyReq = req.replace("dog\/","")
+  return fetch(`https://dog.ceo${proxyReq}`).then( res => res.json())
 }
 
 export default async function handler(
