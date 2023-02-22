@@ -11,6 +11,7 @@ interface Props {
 
 export default function ManyDogs(props:Props){
 
+    const [loading,setLoading] = useState(true)
     const [dogImages, setDogImages] = useState([''])
 
     function getRandomInt(min:number, max:number) {
@@ -32,16 +33,32 @@ export default function ManyDogs(props:Props){
         },[dogImages, props.class])
 
 
-    useEffect(()=>{
-
-    },[])
+    let content = useCallback(()=>{
+        if(loading){
+            return (
+                <div className="w-full h-full m-auto flex-col mx-auto">
+                    <h1 className="w-fit mx-auto font-bold text-3xl">Arf, Fetching!</h1>
+                    <img src="/favicon.svg" className="h-72 w-72 mx-auto" alt=""/>
+                </div>
+            )
+        }
+        else{
+            return(
+            <div className="absolute grid w-full h-full top-0 left-0 grid-cols-8 grid-rows-8 gap-2">
+                {getDogs()}
+            </div>
+            )
+        }
+    },[getDogs, loading])
 
     useEffect(()=>{
         console.log("updating dog images")
+        setLoading(true)
         if(props.filteredBreeds.length == 0){
             fetch(`api/dog/breeds/image/random/${props.dogCount}`)
                 .then(res => res.json())
-                .then(json => {setDogImages(json['message'])})
+                .then(json => {setDogImages(json['message'])
+                setLoading(false)})
         }
         else {
             let eachBreed = Math.floor(props.dogCount / props.filteredBreeds.length)
@@ -53,6 +70,7 @@ export default function ManyDogs(props:Props){
                     .then(json => {
                         console.log(json["message"])
                         setDogImages(prevState => (prevState.concat(json["message"])))
+                        setLoading(false)
                     })
             }
         }
@@ -61,9 +79,7 @@ export default function ManyDogs(props:Props){
 
     return(
         <div className="fixed w-full h-full -z-10">
-            <div className="absolute grid w-full h-full top-0 left-0 grid-cols-8 grid-rows-8 gap-2">
-                {getDogs()}
-            </div>
+            {content()}
         </div>
     )
 }
