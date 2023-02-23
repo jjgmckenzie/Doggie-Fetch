@@ -19,7 +19,7 @@ export default function DogImageScrolling(props:Props){
     return(
         <div className={props.class} style={props.style} key={props.key}>
             <div style={{transform:`translateX(${props.deviation.x}px) translateY(${props.deviation.y}px)`}}>
-                <Image src={props.src} alt={props.alt} width={200} height={200}/>
+                <Image src={props.src} alt={props.alt} width={200} height={200} style={{width:"auto",height:"auto"}}/>
             </div>
         </div>
     )

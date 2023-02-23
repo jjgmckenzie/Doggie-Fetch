@@ -1,4 +1,4 @@
-
+'use client'
 import Select from "react-dropdown-select";
 import {Dispatch, SetStateAction, useEffect, useState} from "react";
 

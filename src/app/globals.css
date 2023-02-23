@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 body{
-    @apply bg-gradient-to-tr from-green-100 to-slate-100 via-blue-100 h-[100vh] text-slate-900;
+    @apply bg-gradient-to-tr from-green-200 to-slate-100 via-purple-200 h-[100vh] text-slate-900;
 }
 
 @keyframes scrollX {

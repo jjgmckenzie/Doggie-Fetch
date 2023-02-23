@@ -50,7 +50,7 @@ export default function ManyDogs(props:Props){
             let delayDeviation = getRandomInt(-1000,1000,seed+1)
             let xDeviation = getRandomInt(-100,+100,seed+2)
             let yDeviation = getRandomInt(-100,+100,seed+3)
-            dogs.push(DogImageScrolling({deviation:{x:xDeviation,y:yDeviation}, key: i,alt: "", class: `${props.class} drop-shadow-lg`, src: dogImages[i], style: {animationDuration:`${30000+speedDeviation}ms`,animationDelay:`${(1000+delayDeviation).toString()}ms`}}))
+            dogs.push(DogImageScrolling({deviation:{x:xDeviation,y:yDeviation}, key: i,alt: "", class: `${props.class} drop-shadow-xl`, src: dogImages[i], style: {animationDuration:`${30000+speedDeviation}ms`,animationDelay:`${(delayDeviation).toString()}ms`}}))
         }
         return (
             <div className={className} key={key}>
@@ -137,7 +137,7 @@ export default function ManyDogs(props:Props){
         setTimeout(()=>{
             addDogRow(dogImagesBuffer)
             setCanLoop(true)
-        }, 3000)
+        }, 1000)
         setDogImageBuffer([])
         addNewDogRow()
     },[addDogRow, addNewDogRow, dogImagesBuffer, canLoop])
