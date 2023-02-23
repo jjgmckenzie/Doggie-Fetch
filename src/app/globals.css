@@ -54,6 +54,6 @@ body{
     animation-fill-mode: forwards;
 }
 
-.dirButton{
+.ctrl-panel{
     @apply shadow-md w-12 mx-auto bg-gray-100;
 }
