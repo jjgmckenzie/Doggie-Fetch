@@ -8,46 +8,50 @@ body{
 
 @keyframes scrollX {
     from{
-        transform: translateX(0vw);
+        transform: translateX(-20vw);
     }
     to{
-        transform: translateX(140vw);
+        transform: translateX(120vw);
     }
 }
 
 
 @keyframes scrollY {
     from{
-        transform: translateY(-100vh);
+        transform: translateY(-50vh);
     }
     to{
-        transform: translateY(100vh);
+        transform: translateY(120vh);
     }
 }
 
 .scrollLeft{
+    transform: translateX(120vw);
     animation-name: scrollX;
     animation-timing-function: linear;
     animation-direction: reverse;
-    animation-iteration-count: infinite;
+    animation-fill-mode: forwards;
 }
 
 .scrollRight{
+    transform: translateX(-20vw);
     animation-name: scrollX;
     animation-timing-function: linear;
-    animation-iteration-count: infinite;
+    animation-fill-mode: forwards;
 }
 
 .scrollUp{
+    transform: translateY(120vw);
     animation-name: scrollY;
     animation-timing-function: linear;
     animation-direction: reverse;
-    animation-iteration-count: infinite;
+    animation-fill-mode: forwards;
 }
 .scrollDown{
+    transform: translateY(-20vw);
     animation-name: scrollY;
     animation-timing-function: linear;
-    animation-iteration-count: infinite;
+    animation-fill-mode: forwards;
 }
 
 .dirButton{

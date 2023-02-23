@@ -1,37 +1,79 @@
 'use client'
 import DogImageScrolling from "@/app/DogImageScroll";
-import React, {useCallback, useEffect, useState} from "react";
+import React, {useCallback, useEffect, useReducer, useState} from "react";
 import {Breed} from "@/app/DogDropDown";
+import {uid} from "uid";
 
 interface Props {
     dogCount:number,
     class:string,
     filteredBreeds:Breed[],
+    direction:string,
+}
+
+
+interface Update{
+    UID: string
+    newRow?:string[]
+}
+
+function reducer(state:{[uid:string]:string[]},update:Update) : {[id:string]:string[]}{
+    if(update.newRow){
+        let addNewRow : {[id:string]:string[]} = {}
+        addNewRow[update.UID] = update.newRow;
+        return {...state,... addNewRow}
+    }
+    let newState = {...state}
+    delete newState[update.UID];
+    return newState
 }
 
 export default function ManyDogs(props:Props){
 
     const [loading,setLoading] = useState(true)
-    const [dogImages, setDogImages] = useState([''])
+    const [dogImageRows,updateDogImages] = useReducer(reducer,{})
 
-    function getRandomInt(min:number, max:number) {
+    let getRandomInt = useCallback((min:number, max:number,seed:number) => {
         min = Math.ceil(min);
         max = Math.floor(max);
-        return Math.floor(Math.random() * (max - min + 1) + min); // The maximum is inclusive and the minimum is inclusive
-    }
+        let x = Math.sin(seed) * 10000;
+        let random = x - Math.floor(x);
+        return Math.floor(random * (max - min + 1) + min); // The maximum is inclusive and the minimum is inclusive
+    },[])
 
-    let getDogs = useCallback(()=>{
+
+    let getDogRow = useCallback((dogImages:string[],className:string,key:string)=>{
         let dogs : JSX.Element[] = [];
         for(let i=0;i<dogImages.length;i++){
-            let speedDeviation = getRandomInt(-10000,10000)
-            let delayDeviation = getRandomInt(-1000,10000)
-            let xDeviation = getRandomInt(-100,+100)
-            let yDeviation = getRandomInt(-100,+100)
-            dogs.push(DogImageScrolling({deviation:{x:xDeviation,y:yDeviation}, key: i,alt: "", class: `${props.class} drop-shadow-lg`, src: dogImages[i], style: {animationDuration:`${30000+speedDeviation}ms`,animationDelay:`${(-i*4000+delayDeviation).toString()}ms`}}))
+            let seed = parseInt(key)+i
+            let speedDeviation = getRandomInt(-15000,0,seed)
+            let delayDeviation = getRandomInt(-1000,1000,seed+1)
+            let xDeviation = getRandomInt(-100,+100,seed+2)
+            let yDeviation = getRandomInt(-100,+100,seed+3)
+            dogs.push(DogImageScrolling({deviation:{x:xDeviation,y:yDeviation}, key: i,alt: "", class: `${props.class} drop-shadow-lg`, src: dogImages[i], style: {animationDuration:`${30000+speedDeviation}ms`,animationDelay:`${(1000+delayDeviation).toString()}ms`}}))
         }
-        return dogs;
-        },[dogImages, props.class])
+        return (
+            <div className={className} key={key}>
+                {dogs}
+            </div>
+        );
+        },[getRandomInt, props.class])
 
+
+    let getDogs = useCallback(()=>{
+        let className = "absolute grid gap-2"
+        if(props.direction == "left" || props.direction == "right"){
+            className += " grid-rows-6 h-full"
+        }
+        else {
+            className += " grid-cols-6 w-full"
+        }
+        let dogRows : JSX.Element[] = [];
+        for(let dogImageRow in dogImageRows){
+            dogRows.push(getDogRow(dogImageRows[dogImageRow],className,dogImageRow))
+        }
+        return dogRows
+    },[dogImageRows, getDogRow, props.direction])
 
     let content = useCallback(()=>{
         if(loading){
@@ -44,38 +86,70 @@ export default function ManyDogs(props:Props){
         }
         else{
             return(
-            <div className="absolute grid w-full h-full top-0 left-0 grid-cols-8 grid-rows-8 gap-2">
-                {getDogs()}
-            </div>
+                <div className="w-full h-full">
+                    {getDogs()}
+                </div>
             )
         }
     },[getDogs, loading])
 
-    useEffect(()=>{
-        console.log("updating dog images")
-        setLoading(true)
+    let addDogRow = useCallback((images:string[]) => {
+        let id:string = uid()
+        updateDogImages({UID:id,newRow:images})
+        setTimeout(()=>{
+            updateDogImages({UID:id})
+
+        },30000)
+    },[])
+
+
+
+    const [dogImagesBuffer, setDogImageBuffer] = useState<string[]>([])
+
+    let addNewDogRow = useCallback(()=>{
         if(props.filteredBreeds.length == 0){
             fetch(`api/dog/breeds/image/random/${props.dogCount}`)
                 .then(res => res.json())
-                .then(json => {setDogImages(json['message'])
-                setLoading(false)})
+                .then(json => {
+                    setDogImageBuffer(json['message'])
+                    setLoading(false)})
         }
         else {
-            let eachBreed = Math.floor(props.dogCount / props.filteredBreeds.length)
-            setDogImages([])
             for(let Breed in props.filteredBreeds){
-                console.log(`api/dog/breed/${props.filteredBreeds[Breed].value}/images/random/${eachBreed}`)
+                let eachBreed = Math.max(Math.floor(props.dogCount / props.filteredBreeds.length),1)
                 fetch(`api/dog/breed/${props.filteredBreeds[Breed].value}/images/random/${eachBreed}`)
                     .then(res => res.json())
                     .then(json => {
-                        console.log(json["message"])
-                        setDogImages(prevState => (prevState.concat(json["message"])))
+                        setDogImageBuffer((prevState => prevState.concat(json["message"])))
                         setLoading(false)
                     })
             }
         }
     },[props.dogCount, props.filteredBreeds])
 
+    let [canLoop,setCanLoop] = useState(true)
+
+    let loopAdd = useCallback(()=>{
+        if(!canLoop){
+            return
+        }
+        setCanLoop(false)
+        setTimeout(()=>{
+            addDogRow(dogImagesBuffer)
+            setCanLoop(true)
+        }, 3000)
+        setDogImageBuffer([])
+        addNewDogRow()
+    },[addDogRow, addNewDogRow, dogImagesBuffer, canLoop])
+
+
+
+
+    useEffect(()=>{
+        if(canLoop){
+            loopAdd()
+        }
+    },[loopAdd, canLoop])
 
     return(
         <div className="fixed w-full h-full -z-10">

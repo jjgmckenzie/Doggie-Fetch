@@ -31,8 +31,8 @@ export default function Home() {
 
     return (
         <main className="pt-4">
-            <DogController setDirection={setDirection} setFilteredBreeds={setFilteredBreeds} filteredBreeds={filteredBreeds}/>
-            <ManyDogs dogCount={50} class={animDirection} filteredBreeds={filteredBreeds}/>
+            <DogController setDirection={setDirection} setFilteredBreeds={setFilteredBreeds} filteredBreeds={filteredBreeds} direction={direction}/>
+            <ManyDogs dogCount={6} class={animDirection} filteredBreeds={filteredBreeds} direction={direction}/>
         </main>
     )
 }
