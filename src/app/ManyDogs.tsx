@@ -1,6 +1,6 @@
 'use client'
 import DogImageScrolling from "@/app/DogImageScroll";
-import React, {useCallback, useEffect, useReducer, useState} from "react";
+import React, {Dispatch, SetStateAction, useCallback, useEffect, useReducer, useState} from "react";
 import {Breed} from "@/app/DogDropDown";
 import {uid} from "uid";
 
@@ -11,6 +11,8 @@ interface Props {
     direction:string,
     animSpeed:number,
     imgSize:number,
+    loading:boolean
+    setLoading:Dispatch<SetStateAction<boolean>>
 }
 
 interface ImageRow{
@@ -36,8 +38,6 @@ function reducer(state:{[uid:string]:ImageRow[]},update:Update) : {[id:string]:I
 }
 
 export default function ManyDogs(props:Props){
-
-    const [loading,setLoading] = useState(true)
     const [dogImageRows,updateDogImages] = useReducer(reducer,{})
 
     let getRandomInt = useCallback((min:number, max:number,seed:number) => {
@@ -88,7 +88,7 @@ export default function ManyDogs(props:Props){
     },[dogImageRows, getDogRow])
 
     let content = useCallback(()=>{
-        if(loading){
+        if(props.loading){
             return (
                 <div className="w-full h-full m-auto flex-col mx-auto">
                     <h1 className="w-fit mx-auto font-bold text-3xl">Arf, Fetching!</h1>
@@ -103,7 +103,7 @@ export default function ManyDogs(props:Props){
                 </div>
             )
         }
-    },[getDogs, loading])
+    },[getDogs, props.loading])
 
     let addDogRow = useCallback((images:string[],animSpeed:number,imgSize:number) => {
         let id:string = uid()
@@ -127,7 +127,7 @@ export default function ManyDogs(props:Props){
                 .then(res => res.json())
                 .then(json => {
                     setDogImageBuffer(json['message'])
-                    setLoading(false)})
+                    props.setLoading(false)})
         }
         else {
             for(let Breed in props.filteredBreeds){
@@ -136,11 +136,11 @@ export default function ManyDogs(props:Props){
                     .then(res => res.json())
                     .then(json => {
                         setDogImageBuffer((prevState => prevState.concat(json["message"])))
-                        setLoading(false)
+                        props.setLoading(false)
                     })
             }
         }
-    },[props.dogCount, props.filteredBreeds])
+    },[props])
 
     let [canLoop,setCanLoop] = useState(true)
 

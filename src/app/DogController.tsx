@@ -17,6 +17,8 @@ interface Props{
     setFilteredBreeds:Dispatch<SetStateAction<Breed[]>>
     filteredBreeds:Breed[]
     direction:string
+    loading:boolean
+    breedList:Breed[]
 }
 export default function DogController(props:Props){
     const [optionsPoppedUp, setOptionsPoppedUp] = useState(false)
