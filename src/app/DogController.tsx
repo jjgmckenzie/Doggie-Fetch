@@ -4,6 +4,8 @@ import DogDropDown, {Breed} from "@/app/DogDropDown";
 import DogControlPanel from "@/app/DogControlPanel";
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
+import ClickAwayListener from 'react-click-away-listener';
+
 
 
 interface Props{
@@ -56,13 +58,19 @@ export default function DogController(props:Props){
 
     return(
         <div className="fixed bottom-0 right-0 left-0 w-min mx-auto z-10 mb-3 sm:mb-5">
-            {FilterPanel()}
-            <div className="bg-white bg-opacity-25 rounded-lg backdrop-blur-sm shadow p-3 flex w-min mx-auto">
-                <DogControlPanel setOptionsPoppedUp={setOptionsPoppedUp} optionsPoppedUp={optionsPoppedUp} uploadPoppedUp={uploadPoppedUp} setUploadPoppedUp={setUploadPoppedUp}/>
-                <div className="mt-auto w-48">
-                    <DirectionControl setDirection={props.setDirection}/>
+            <ClickAwayListener onClickAway={()=>
+            {setUploadPoppedUp(false)
+            setOptionsPoppedUp(false)}}>
+                <div>
+                    {FilterPanel()}
+                    <div className="bg-white bg-opacity-25 rounded-lg backdrop-blur-sm shadow p-3 flex w-min mx-auto">
+                        <DogControlPanel setOptionsPoppedUp={setOptionsPoppedUp} optionsPoppedUp={optionsPoppedUp} uploadPoppedUp={uploadPoppedUp} setUploadPoppedUp={setUploadPoppedUp}/>
+                        <div className="mt-auto w-48">
+                            <DirectionControl setDirection={props.setDirection}/>
+                        </div>
+                    </div>
                 </div>
-            </div>
+            </ClickAwayListener>
         </div>
     )
 }
