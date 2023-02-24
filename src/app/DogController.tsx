@@ -25,7 +25,7 @@ export default function DogController(props:Props){
     const FilterPanel = useCallback(()=>{
         if(optionsPoppedUp) {
             return (
-                <div className="shadow-xl rounded-lg max-w-2xl w-[80vw] bg-white mb-2 p-4 mx-auto">
+                <div className="shadow-xl rounded-lg max-w-2xl w-[80vw] bg-white mb-2 p-4 mx-auto pointer-events-auto">
                     <DogDropDown {...props}/>
                     <div className="flex mt-2">
                         <label className=" text-sm mr-4 text-center">Speed:</label>
@@ -61,7 +61,7 @@ export default function DogController(props:Props){
             <ClickAwayListener onClickAway={()=>
             {setUploadPoppedUp(false)
             setOptionsPoppedUp(false)}}>
-                <div>
+                <div className="pointer-events-none">
                     {FilterPanel()}
                     <div className="bg-white bg-opacity-25 rounded-lg backdrop-blur-sm shadow p-3 flex w-min mx-auto">
                         <DogControlPanel setOptionsPoppedUp={setOptionsPoppedUp} optionsPoppedUp={optionsPoppedUp} uploadPoppedUp={uploadPoppedUp} setUploadPoppedUp={setUploadPoppedUp}/>

@@ -37,7 +37,7 @@ export default function DogControlPanel (props:Props) {
     },[props])
 
     return (
-        <div className="w-16 mr-4">
+        <div className="w-16 mr-4 pointer-events-auto">
             <button className="ctrl-panel px-1 min-w-fit" onClick={()=>{togglePanelShown(panelSelected.options)}}>Options</button><br/>
             <button className="ctrl-panel mt-3 px-1 min-w-fit" onClick={()=>{togglePanelShown(panelSelected.upload)}}>Upload</button>
         </div>

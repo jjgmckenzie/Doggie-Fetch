@@ -6,7 +6,7 @@ interface Props{
 }
 export default function DirectionControl(props:Props){
     return(
-        <div className="grid grid-cols-3 grid-rows-2 gap-y-3">
+        <div className="grid grid-cols-3 grid-rows-2 gap-y-3 pointer-events-auto">
             <button className="col-span-3 ctrl-panel" onClick={()=> {props.setDirection("up")}}>↑</button>
             <button className="ctrl-panel" onClick={()=> {props.setDirection("left")}}>←</button>
             <button className="ctrl-panel" onClick={()=> {props.setDirection("down")}}>↓</button>
