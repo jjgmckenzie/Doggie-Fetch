@@ -38,7 +38,7 @@ export default function DogController(props:Props){
         }
         if(uploadPoppedUp) {
             return (
-                <div className="shadow-xl rounded-lg max-w-2xl w-[95vw] bg-white mb-2 px-4 pt-4 pb-2 mx-auto">
+                <div className="shadow-xl rounded-lg max-w-2xl w-[95vw] bg-white mb-2 px-4 pt-4 pb-2 mx-auto pointer-events-auto">
                     <h1 className="mx-auto text-xl sm:text-3xl text-center">Add your pooch to the Internet&apos;s biggest collection of <strong>open source dog pictures!</strong></h1>
                     <p className="my-2 px-1 leading-tight">The images available on this site are initially <i>fetched</i> from <a href="https://dog.ceo/api" className="text-blue-500 underline">Dog API</a>, who accept new members to their pack! You can upload your pictures here, and our bot will submit your good boy / girl to them on your behalf.</p>
                     <ul className="text-sm list list-disc leading-4 pl-7 pr-1 mb-2">
