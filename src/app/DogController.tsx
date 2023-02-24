@@ -1,10 +1,13 @@
 import DirectionControl from "@/app/DirectionControl";
 import {Dispatch, SetStateAction, useCallback, useState} from "react";
-import DogDropDown, {Breed} from "@/app/DogDropDown";
+import {Breed} from "@/app/Breed";
 import DogControlPanel from "@/app/DogControlPanel";
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
 import ClickAwayListener from 'react-click-away-listener';
+import Select from "react-dropdown-select";
+import {isMobile} from 'react-device-detect';
+import UploadPooch from "@/app/UploadPooch";
 
 
 
@@ -23,12 +26,13 @@ interface Props{
 export default function DogController(props:Props){
     const [optionsPoppedUp, setOptionsPoppedUp] = useState(false)
     const [uploadPoppedUp, setUploadPoppedUp] = useState(false)
+    const [breedUploaded,setBreedUploaded] = useState<Breed[]>([])
 
     const FilterPanel = useCallback(()=>{
         if(optionsPoppedUp) {
             return (
-                <div className="shadow-xl rounded-lg max-w-2xl w-[80vw] bg-white mb-2 p-4 mx-auto pointer-events-auto">
-                    <DogDropDown {...props}/>
+                <div className="shadow-xl rounded-lg max-w-2xl w-[80vw] glass-bg mb-2 p-4 mx-auto pointer-events-auto">
+                    <Select options={props.breedList} values={props.filteredBreeds} multi clearable dropdownPosition="top" placeholder="Select Breeds..." loading={props.loading} searchable={!isMobile} onChange={(values)=>{props.setFilteredBreeds(values)}}/>
                     <div className="flex mt-2">
                         <label className=" text-sm mr-4 text-center">Speed:</label>
                         <Slider min={(1/50_000)} max={(1/10_000)} defaultValue={(1/props.animSpeed)} step={(1/100_000)} className={"my-auto"} onChange={value => {props.setAnimSpeed(1/(value as number))}}/>
@@ -40,23 +44,14 @@ export default function DogController(props:Props){
         }
         if(uploadPoppedUp) {
             return (
-                <div className="shadow-xl rounded-lg max-w-2xl w-[95vw] bg-white mb-2 px-4 pt-4 pb-2 mx-auto pointer-events-auto">
-                    <h1 className="mx-auto text-xl sm:text-3xl text-center">Add your pooch to the Internet&apos;s biggest collection of <strong>open source dog pictures!</strong></h1>
-                    <p className="my-2 px-1 leading-tight">The images available on this site are initially <i>fetched</i> from <a href="https://dog.ceo/api" className="text-blue-500 underline">Dog API</a>, who accept new members to their pack! You can upload your pictures here, and our bot will submit your good boy / girl to them on your behalf.</p>
-                    <ul className="text-sm list list-disc leading-4 pl-7 pr-1 mb-2">
-                        <li>Please ensure your photos are of a good quality and the dog is easily identifiable in the photo</li>
-                        <li>Please ensure your photo features one dog only (although additional dogs can be in the background)</li>
-                        <li>Photos must not include any human or any part of a human (GDPR)</li>
-                    </ul>
-                    <p className="px-1 text-xs sm:text-sm tracking-tight leading-3"><strong>Note: </strong>Fetch! uses AI vision to prevent misuse, which may flag your upload incorrectly. In this case, you can manually submit your photos as a <a className="text-blue-500 underline" href="https://github.com/jigsawpieces/dog-api-images#dog-api-images">GitHub pull request here.</a> </p>
-                </div>
+                <UploadPooch breedList={props.breedList} breedUploaded={breedUploaded} loading={props.loading} setBreedUploaded={setBreedUploaded} setFilteredBreeds={props.setFilteredBreeds}/>
             )
         }
         return (
             <>
             </>
         )
-    },[optionsPoppedUp, props, uploadPoppedUp])
+    },[breedUploaded, optionsPoppedUp, props, uploadPoppedUp])
 
     return(
         <div className="fixed bottom-0 right-0 left-0 w-min mx-auto z-10 mb-3 sm:mb-5">

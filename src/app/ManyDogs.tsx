@@ -1,7 +1,7 @@
 'use client'
 import DogImageScrolling from "@/app/DogImageScroll";
 import React, {Dispatch, SetStateAction, useCallback, useEffect, useReducer, useState} from "react";
-import {Breed} from "@/app/DogDropDown";
+import {Breed} from "@/app/Breed";
 import {uid} from "uid";
 
 interface Props {

@@ -2,7 +2,7 @@
 import ManyDogs from "@/app/ManyDogs";
 import DogController from "@/app/DogController";
 import {useEffect, useState} from "react";
-import {Breed} from "@/app/DogDropDown";
+import {Breed} from "@/app/Breed";
 
 export default function Home() {
     const [filteredBreeds,setFilteredBreeds] = useState<Breed[]>([])

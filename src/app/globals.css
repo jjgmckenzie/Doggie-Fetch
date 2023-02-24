@@ -6,6 +6,10 @@ body{
     @apply bg-gradient-to-tr from-blue-300 to-pink-300 via-teal-300 h-[100vh] text-slate-900;
 }
 
+.glass-bg{
+    @apply bg-white backdrop-blur-sm bg-opacity-95;
+}
+
 @keyframes scrollX {
     from{
         transform: translateX(-50vw);
