@@ -8,10 +8,10 @@ body{
 
 @keyframes scrollX {
     from{
-        transform: translateX(-20vw);
+        transform: translateX(-50vw);
     }
     to{
-        transform: translateX(120vw);
+        transform: translateX(150vw);
     }
 }
 
@@ -21,12 +21,11 @@ body{
         transform: translateY(-50vh);
     }
     to{
-        transform: translateY(120vh);
+        transform: translateY(150vh);
     }
 }
 
 .scrollLeft{
-    transform: translateX(120vw);
     animation-name: scrollX;
     animation-timing-function: linear;
     animation-direction: reverse;
@@ -34,26 +33,23 @@ body{
 }
 
 .scrollRight{
-    transform: translateX(-20vw);
     animation-name: scrollX;
     animation-timing-function: linear;
     animation-fill-mode: forwards;
 }
 
 .scrollUp{
-    transform: translateY(120vw);
     animation-name: scrollY;
     animation-timing-function: linear;
     animation-direction: reverse;
     animation-fill-mode: forwards;
 }
 .scrollDown{
-    transform: translateY(-20vw);
     animation-name: scrollY;
     animation-timing-function: linear;
     animation-fill-mode: forwards;
 }
 
 .ctrl-panel{
-    @apply shadow-md w-12 mx-auto bg-gray-100;
+    @apply shadow-md rounded-lg w-12 mx-auto bg-gray-100;
 }

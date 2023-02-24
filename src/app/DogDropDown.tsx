@@ -56,6 +56,6 @@ export default function DogDropDown(props:Props){
             })
     ,[])
     return (
-        <Select options={breedList} values={props.filteredBreeds} multi clearable dropdownPosition="top" loading={loading} searchable onChange={(values)=>{props.setFilteredBreeds(values)}}/>
+        <Select options={breedList} values={props.filteredBreeds} multi clearable dropdownPosition="top" placeholder="Select Breeds..." loading={loading} searchable onChange={(values)=>{props.setFilteredBreeds(values)}}/>
     )
 }

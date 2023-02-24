@@ -9,17 +9,24 @@ interface Props {
     class:string,
     filteredBreeds:Breed[],
     direction:string,
+    animSpeed:number,
+    imgSize:number,
 }
 
+interface ImageRow{
+    animSpeed:number,
+    imgSize:number,
+    image:string,
+}
 
 interface Update{
     UID: string
-    newRow?:string[]
+    newRow?:ImageRow[]
 }
 
-function reducer(state:{[uid:string]:string[]},update:Update) : {[id:string]:string[]}{
+function reducer(state:{[uid:string]:ImageRow[]},update:Update) : {[id:string]:ImageRow[]}{
     if(update.newRow){
-        let addNewRow : {[id:string]:string[]} = {}
+        let addNewRow : {[id:string]:ImageRow[]} = {}
         addNewRow[update.UID] = update.newRow;
         return {...state,... addNewRow}
     }
@@ -42,38 +49,43 @@ export default function ManyDogs(props:Props){
     },[])
 
 
-    let getDogRow = useCallback((dogImages:string[],className:string,key:string)=>{
+    let getDogRow = useCallback((rows:ImageRow[],key:string)=>{
+        let style : React.CSSProperties = {}
+        let className = ''
+        if(rows.length > 0){
+            if(props.direction == "left" || props.direction == "right"){
+                className = "flex-col h-full"
+            }
+            else {
+                className="flex w-full"
+            }
+        }
         let dogs : JSX.Element[] = [];
-        for(let i=0;i<dogImages.length;i++){
+        for(let i=0;i<rows.length;i++){
             let seed = parseInt(key)+i
-            let speedDeviation = getRandomInt(-15000,0,seed)
-            let delayDeviation = getRandomInt(-1000,1000,seed+1)
+            let src = rows[i].image
+            let animSpeed = rows[i].animSpeed
+            let imgSize = rows[i].imgSize
+            let speedDeviation = getRandomInt(-(animSpeed/2),0,seed)
             let xDeviation = getRandomInt(-100,+100,seed+2)
             let yDeviation = getRandomInt(-100,+100,seed+3)
-            dogs.push(DogImageScrolling({deviation:{x:xDeviation,y:yDeviation}, key: i,alt: "", class: `${props.class} drop-shadow-xl`, src: dogImages[i], style: {animationDuration:`${30000+speedDeviation}ms`,animationDelay:`${(delayDeviation).toString()}ms`}}))
+            dogs.push(DogImageScrolling({deviation:{x:xDeviation,y:yDeviation}, key: i,alt: "", class: `${props.class} drop-shadow-xl`, src: src, style: {animationDuration:`${animSpeed+speedDeviation}ms`, height:`${imgSize}px`,width:`${imgSize}px`}}))
         }
         return (
-            <div className={className} key={key}>
+            <div className={`absolute justify-around ${className}`} style={style} key={key}>
                 {dogs}
             </div>
         );
-        },[getRandomInt, props.class])
+        },[getRandomInt, props.class, props.direction])
 
 
     let getDogs = useCallback(()=>{
-        let className = "absolute grid gap-2"
-        if(props.direction == "left" || props.direction == "right"){
-            className += " grid-rows-6 h-full"
-        }
-        else {
-            className += " grid-cols-6 w-full"
-        }
         let dogRows : JSX.Element[] = [];
         for(let dogImageRow in dogImageRows){
-            dogRows.push(getDogRow(dogImageRows[dogImageRow],className,dogImageRow))
+            dogRows.push(getDogRow(dogImageRows[dogImageRow],dogImageRow))
         }
         return dogRows
-    },[dogImageRows, getDogRow, props.direction])
+    },[dogImageRows, getDogRow])
 
     let content = useCallback(()=>{
         if(loading){
@@ -93,13 +105,16 @@ export default function ManyDogs(props:Props){
         }
     },[getDogs, loading])
 
-    let addDogRow = useCallback((images:string[]) => {
+    let addDogRow = useCallback((images:string[],animSpeed:number,imgSize:number) => {
         let id:string = uid()
-        updateDogImages({UID:id,newRow:images})
+        let row: ImageRow[] = []
+        for(let image in images){
+            row.push({image:images[image],animSpeed:animSpeed,imgSize:imgSize})
+        }
+        updateDogImages({UID:id,newRow:row})
         setTimeout(()=>{
             updateDogImages({UID:id})
-
-        },30000)
+        },animSpeed)
     },[])
 
 
@@ -135,12 +150,12 @@ export default function ManyDogs(props:Props){
         }
         setCanLoop(false)
         setTimeout(()=>{
-            addDogRow(dogImagesBuffer)
+            addDogRow(dogImagesBuffer,props.animSpeed,props.imgSize)
             setCanLoop(true)
-        }, 1000)
+        }, Math.floor(1000))
         setDogImageBuffer([])
         addNewDogRow()
-    },[addDogRow, addNewDogRow, dogImagesBuffer, canLoop])
+    },[canLoop, addNewDogRow, addDogRow, dogImagesBuffer, props.animSpeed, props.imgSize])
 
 
 
