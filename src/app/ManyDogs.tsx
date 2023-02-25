@@ -3,6 +3,7 @@ import DogImageScrolling from "@/app/DogImageScroll";
 import React, {Dispatch, SetStateAction, useCallback, useEffect, useReducer, useState} from "react";
 import {Breed} from "@/app/Breed";
 import {uid} from "uid";
+import {isMobile} from "react-device-detect";
 
 interface Props {
     dogCount:number,
@@ -152,10 +153,10 @@ export default function ManyDogs(props:Props){
         setTimeout(()=>{
             addDogRow(dogImagesBuffer,props.animSpeed,props.imgSize)
             setCanLoop(true)
-        }, Math.floor(1000))
+        }, (isMobile && !props.loading ? 3000 : 1000)) // even very good modern phones cannot handle high draw calls
         setDogImageBuffer([])
         addNewDogRow()
-    },[canLoop, addNewDogRow, addDogRow, dogImagesBuffer, props.animSpeed, props.imgSize])
+    },[canLoop, props.loading, props.animSpeed, props.imgSize, addNewDogRow, addDogRow, dogImagesBuffer])
 
 
 
