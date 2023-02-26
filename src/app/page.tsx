@@ -1,8 +1,9 @@
 'use client'
 import ManyDogs from "@/app/ManyDogs";
 import DogController from "@/app/DogController";
-import {useEffect, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import {Breed} from "@/app/Breed";
+import DropFiles from "@/app/DropFiles";
 
 export default function Home() {
     const [filteredBreeds,setFilteredBreeds] = useState<Breed[]>([])
@@ -12,6 +13,27 @@ export default function Home() {
     const [imgSize,setImgSize] = useState(300)
     const [breedList,setBreedList] = useState<Breed[]>([])
     const [loading,setLoading] = useState(true)
+    const [image, setImage] = useState<string|null>(null);
+    const [isAcceptingFiles, setIsAcceptingFiles] = useState(false)
+
+
+
+    const setFile = useCallback((file:File|null)=>{
+        if(file == null){
+            setImage(null)
+            return
+        }
+        let fileReader = new FileReader()
+        fileReader.onload = (e) => {
+            const result = e.target?.result
+            if(result){
+                setImage(result.toString())
+            }
+        }
+        fileReader.readAsDataURL(file)
+    },[])
+
+
     function ParseBreedJson(breedJson:[string:[string]]) : Breed[] {
 
         let parsedBreeds: Breed[] = []
@@ -71,8 +93,9 @@ export default function Home() {
     },[direction])
 
     return (
-        <main className="pt-4">
-            <DogController setDirection={setDirection} setFilteredBreeds={setFilteredBreeds} filteredBreeds={filteredBreeds} direction={direction} setAnimSpeed={setAnimSpeed} animSpeed={animSpeed} imgSize={imgSize} setImgSize={setImgSize} loading={loading} breedList={breedList}/>
+        <main className="pt-4 select-none">
+            <DropFiles isAcceptingFiles={isAcceptingFiles} setFile={setFile}/>
+            <DogController setDirection={setDirection} setFilteredBreeds={setFilteredBreeds} filteredBreeds={filteredBreeds} direction={direction} setAnimSpeed={setAnimSpeed} animSpeed={animSpeed} imgSize={imgSize} setImgSize={setImgSize} loading={loading} breedList={breedList} image={image} setFile={setFile} setIsAcceptingFiles={setIsAcceptingFiles}/>
             <ManyDogs dogCount={6} class={animDirection} filteredBreeds={filteredBreeds} direction={direction} animSpeed={animSpeed} imgSize={imgSize} loading={loading} setLoading={setLoading}/>
         </main>
     )

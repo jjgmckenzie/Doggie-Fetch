@@ -168,7 +168,7 @@ export default function ManyDogs(props:Props){
     },[loopAdd, canLoop])
 
     return(
-        <div className="fixed w-full h-full -z-10">
+        <div className="fixed w-full h-full -z-20">
             {content()}
         </div>
     )

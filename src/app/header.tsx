@@ -1,6 +1,6 @@
 export default function Header(){
     return (
-        <div className="w-full shadow-lg glass-bg rounded-b-md">
+        <div className="w-full shadow-lg glass-bg rounded-b-md select-none z-20">
             <header className="max-w-7xl mx-auto flex px-2 ">
                 <img src="/favicon.svg" className="h-16 w-16 pr-4" alt=""/>
                 <h1 className="my-auto font-bold text-2xl sm:text-4xl drop-shadow-xl">Go Fetch!</h1>

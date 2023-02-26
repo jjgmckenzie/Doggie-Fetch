@@ -22,6 +22,9 @@ interface Props{
     direction:string
     loading:boolean
     breedList:Breed[]
+    setFile: (file: File|null)=>void;
+    image:string|null
+    setIsAcceptingFiles: Dispatch<SetStateAction<boolean>>
 }
 export default function DogController(props:Props){
     const [optionsPoppedUp, setOptionsPoppedUp] = useState(false)
@@ -44,7 +47,7 @@ export default function DogController(props:Props){
         }
         if(uploadPoppedUp) {
             return (
-                <UploadPooch breedList={props.breedList} breedUploaded={breedUploaded} loading={props.loading} setBreedUploaded={setBreedUploaded} setFilteredBreeds={props.setFilteredBreeds}/>
+                <UploadPooch breedList={props.breedList} breedUploaded={breedUploaded} loading={props.loading} setBreedUploaded={setBreedUploaded} setFilteredBreeds={props.setFilteredBreeds} image={props.image} setFile={props.setFile} setIsAcceptingFiles={props.setIsAcceptingFiles}/>
             )
         }
         return (
@@ -61,7 +64,7 @@ export default function DogController(props:Props){
                 <div className="pointer-events-none">
                     {FilterPanel()}
                     <div className="bg-white bg-opacity-25 rounded-lg backdrop-blur-sm shadow p-3 flex w-min mx-auto">
-                        <DogControlPanel setOptionsPoppedUp={setOptionsPoppedUp} optionsPoppedUp={optionsPoppedUp} uploadPoppedUp={uploadPoppedUp} setUploadPoppedUp={setUploadPoppedUp}/>
+                        <DogControlPanel setOptionsPoppedUp={setOptionsPoppedUp} optionsPoppedUp={optionsPoppedUp} uploadPoppedUp={uploadPoppedUp} setUploadPoppedUp={setUploadPoppedUp} />
                         <div className="mt-auto w-48">
                             <DirectionControl setDirection={props.setDirection}/>
                         </div>
