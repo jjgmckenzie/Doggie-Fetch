@@ -1,0 +1,21 @@
+person.jpg:
+    link: https://commons.wikimedia.org/wiki/File:Linus_torvalds_bh.jpg
+    author: https://commons.wikimedia.org/wiki/User:Bhankins
+    license: public domain
+
+dog_and_person.jpg:
+    link: https://commons.wikimedia.org/wiki/File:Kattai_dog_alias_katttakal_dog_friendly_with_owner.jpg
+    author: https://commons.wikimedia.org/wiki/User:YAALI
+    license: CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/deed.en)
+
+dog.jpg:
+    link: https://commons.wikimedia.org/wiki/File:Canis_lupus_familiaris_2012_000.jpg
+    author: https://commons.wikimedia.org/wiki/User:Veronidae
+    license: CC BY-SA 3.0 (https://creativecommons.org/licenses/by-sa/3.0/deed.en)
+
+test_image.*:
+    link: https://en.wikipedia.org/wiki/File:SMPTE_Color_Bars.svg
+    author: https://commons.wikimedia.org/wiki/User:Denelson83
+    license: public domain
+
+images retrieved on 2022/02/27 @ 00:00 UTC
