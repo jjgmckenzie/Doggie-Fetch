@@ -7,14 +7,19 @@ import (
 )
 
 type ImageUploadHandler struct {
-	builder postedimage.Builder
+	builder       postedimage.Builder
+	gitHubHandler GitHubHandler
 }
 
-func processImage(image postedimage.Image) (int, any) {
+func (i ImageUploadHandler) processImage(image postedimage.Image) (int, any) {
 	if !isCompliant(image.Image) {
 		return http.StatusPreconditionFailed, nil
 	}
-	return http.StatusAccepted, postImageToGitHub(image)
+	link, err := i.gitHubHandler.PostToGithub(image)
+	if err != nil {
+		return http.StatusInternalServerError, nil
+	}
+	return http.StatusAccepted, link
 }
 
 func (i ImageUploadHandler) getPostedImage(c *gin.Context) (postedimage.Image, error) {
@@ -30,5 +35,5 @@ func (i ImageUploadHandler) HandleImageUpload(c *gin.Context) {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-	c.JSON(processImage(image))
+	c.JSON(i.processImage(image))
 }
