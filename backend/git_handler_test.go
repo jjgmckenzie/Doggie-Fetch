@@ -10,14 +10,14 @@ import (
 	"testing"
 )
 
-func initGitHandler(fs billy.Filesystem) gitHandler {
-	repository, _ := git.Init(memory.NewStorage(), fs)
-	worktree, _ := repository.Worktree()
+func initGitHandler(storage *memory.Storage, fs billy.Filesystem) (gitHandler, *git.Repository, *git.Worktree) {
+	repo, _ := git.Init(storage, fs)
+	worktree, _ := repo.Worktree()
 	worktree.Commit("initial commit", &git.CommitOptions{AllowEmptyCommits: true})
 	return gitHandler{
 		worktree:   worktree,
-		repository: repository,
-	}
+		repository: repo,
+	}, repo, worktree
 }
 
 func getAmountOfBranches(branches storer.ReferenceIter) int {
@@ -34,15 +34,15 @@ func getAmountOfCommits(repository *git.Repository) int {
 
 func TestGitHandlerMakesNewBranch(t *testing.T) {
 	// given a git handler with 1 branch,
-	handler := initGitHandler(memfs.New())
-	branches, _ := handler.repository.Branches()
+	handler, repo, _ := initGitHandler(memory.NewStorage(), memfs.New())
+	branches, _ := repo.Branches()
 	branchCount := getAmountOfBranches(branches)
 	if branchCount != 1 {
 		println("started with more than one branch")
 		t.Fail()
 	}
 	// when a new branch is asked to be created,
-	err := handler.NewBranch()
+	err := handler.NewBranch("test")
 
 	// there are no errors,
 	if err != nil {
@@ -51,7 +51,7 @@ func TestGitHandlerMakesNewBranch(t *testing.T) {
 		return
 	}
 	// and there is now a new branch
-	branches, _ = handler.repository.Branches()
+	branches, _ = repo.Branches()
 	branchCount = getAmountOfBranches(branches)
 	if branchCount != 2 {
 		println(branchCount)
@@ -62,22 +62,22 @@ func TestGitHandlerMakesNewBranch(t *testing.T) {
 func TestGitHandlerAddsAllAndCommitsWithMessage(t *testing.T) {
 	// given a git handler with 1 commit,
 	fs := memfs.New()
-	handler := initGitHandler(fs)
-	if getAmountOfCommits(handler.repository) != 1 {
+	handler, repo, _ := initGitHandler(memory.NewStorage(), fs)
+	if getAmountOfCommits(repo) != 1 {
 		println("started with more than one commit")
 		t.Fail()
 	}
 	// when a new file is made, and committed with a given commit message
 	fs.Create("Readme.md")
-	handler.AddAndCommitAll("given commit message")
+	handler.addAndCommitAll("given commit message")
 
 	// then a new commit is added,
-	if getAmountOfCommits(handler.repository) != 2 {
+	if getAmountOfCommits(repo) != 2 {
 		println("commit did not increment")
 		t.Fail()
 	}
 	headRef, _ := handler.repository.Head()
-	headCommit, _ := handler.repository.CommitObject(headRef.Hash())
+	headCommit, _ := repo.CommitObject(headRef.Hash())
 
 	// and that commit has the given commit message
 	if headCommit.Message != "given commit message" {
@@ -91,4 +91,61 @@ func TestGitHandlerAddsAllAndCommitsWithMessage(t *testing.T) {
 	if fromFile != nil || toFile == nil || toFile.Path() != "Readme.md" {
 		t.Fail()
 	}
+}
+
+func TestRefSpec(t *testing.T) {
+	// given a git handler with a branch named master,
+	handler, _, _ := initGitHandler(memory.NewStorage(), memfs.New())
+	// when asked for the refSpec
+	refSpec, _ := handler.getRefSpec()
+	// then is the expected result
+	if refSpec != "+refs/heads/master:refs/heads/master" {
+		t.Fail()
+	}
+	// and the expected result is valid
+	if refSpec.Validate() != nil {
+		t.Fail()
+	}
+}
+
+type mockWorkTree struct {
+	wasCalled chan bool
+}
+
+func (m mockWorkTree) Checkout(options *git.CheckoutOptions) error {
+	return nil
+}
+
+func (m mockWorkTree) AddWithOptions(options *git.AddOptions) error {
+	return nil
+}
+
+func (m mockWorkTree) Commit(msg string, options *git.CommitOptions) (plumbing.Hash, error) {
+	close(m.wasCalled)
+	return [20]byte{}, nil
+}
+
+type mockRepository struct {
+	wasCalled chan bool
+}
+
+func (m mockRepository) Head() (*plumbing.Reference, error) {
+	return &plumbing.Reference{}, nil
+}
+
+func (m mockRepository) Push(options *git.PushOptions) error {
+	close(m.wasCalled)
+	return nil
+}
+
+func TestGitHandler_PushWithCommit(t *testing.T) {
+	// given a gitHandler with a mock worktree and repo
+	mockTree := &mockWorkTree{make(chan bool)}
+	mockRepo := &mockRepository{make(chan bool)}
+	g := gitHandler{worktree: mockTree, repository: mockRepo}
+	// when pushwithcommit is called
+	g.PushWithCommit("")
+	// then commit and push were called
+	<-mockRepo.wasCalled
+	<-mockTree.wasCalled
 }

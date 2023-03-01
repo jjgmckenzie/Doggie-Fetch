@@ -4,67 +4,101 @@ import (
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/config"
 	"github.com/go-git/go-git/v5/plumbing"
-	"github.com/google/uuid"
-	"os"
+	"github.com/go-git/go-git/v5/plumbing/object"
+	"github.com/go-git/go-git/v5/plumbing/transport/http"
+	"time"
 )
 
+type Auth struct {
+	username, token string
+}
+
 type GitHandler interface {
-	NewBranch() error
-	AddAndCommitAll(msg string) error
-	Push() error
+	NewBranch(name string) error
+	PushWithCommit(msg string) error
+}
+
+type workTree interface {
+	Checkout(options *git.CheckoutOptions) error
+	AddWithOptions(options *git.AddOptions) error
+	Commit(msg string, options *git.CommitOptions) (plumbing.Hash, error)
+}
+
+type repository interface {
+	Head() (*plumbing.Reference, error)
+	Push(options *git.PushOptions) error
 }
 
 type gitHandler struct {
-	worktree   *git.Worktree
-	repository *git.Repository
+	worktree   workTree
+	repository repository
+	auth       Auth
 }
 
-func (g gitHandler) NewBranch() error {
+func (g gitHandler) NewBranch(name string) error {
 	return g.worktree.Checkout(&git.CheckoutOptions{
-		Branch: plumbing.NewBranchReferenceName(uuid.New().String()),
+		Branch: plumbing.NewBranchReferenceName(name),
 		Create: true})
 }
 
-func (g gitHandler) AddAndCommitAll(msg string) error {
-	err := g.worktree.AddWithOptions(&git.AddOptions{All: true})
-	if err != nil {
-		return err
-	}
-	_, err = g.worktree.Commit(msg, &git.CommitOptions{All: true})
+func (g gitHandler) addAll() error {
+	return g.worktree.AddWithOptions(&git.AddOptions{All: true})
+}
+
+func (g gitHandler) commitAll(msg string) error {
+	_, err := g.worktree.Commit(msg, &git.CommitOptions{
+		All: true,
+		Author: &object.Signature{Name: "GoFetchBot[bot]",
+			Email: "126431462+GoFetchBot[bot]@users.noreply.github.com",
+			When:  time.Now()},
+	})
 	return err
 }
 
-func (g gitHandler) Push() error {
-	return g.repository.Push(&git.PushOptions{})
+func (g gitHandler) getRefSpec() (config.RefSpec, error) {
+	local, err := g.repository.Head()
+	refSpec := config.RefSpec("")
+	if err == nil {
+		refSpec = config.RefSpec("+" + local.Name() + ":" + local.Name())
+	}
+	return refSpec, err
 }
 
-func NewGitHandler(upstream, origin string) (GitHandler, error) {
-	repository, err := git.PlainClone("./dog-api-images/", false, &git.CloneOptions{
-		URL:        upstream,
-		RemoteName: "upstream",
-		Progress:   os.Stdout,
-	})
-	if err == git.ErrRepositoryAlreadyExists {
-		repository, err = git.PlainOpen("./dog-api-images/")
+func (g gitHandler) push() error {
+	refSpec, err := g.getRefSpec()
+	if err == nil {
+		err = g.repository.Push(&git.PushOptions{
+			RefSpecs: []config.RefSpec{refSpec},
+			Auth:     &http.BasicAuth{Username: g.auth.username, Password: g.auth.token},
+			Force:    true,
+		})
 	}
+	return err
+}
+
+func (g gitHandler) addAndCommitAll(msg string) error {
+	err := g.addAll()
+	if err == nil {
+		err = g.commitAll(msg)
+	}
+	return err
+}
+
+func (g gitHandler) PushWithCommit(msg string) error {
+	err := g.addAndCommitAll(msg)
+	if err == nil {
+		err = g.push()
+	}
+	return err
+}
+
+func NewGitHandler(path string, auth Auth) (GitHandler, error) {
+
+	repo, err := git.PlainOpen(path)
 	if err != nil {
 		return nil, err
 	}
 
-	_, err = repository.CreateRemote(&config.RemoteConfig{
-		URLs: []string{origin},
-		Name: "origin"})
-
-	if err != nil {
-		if err != git.ErrRemoteExists {
-			return nil, err
-		}
-	}
-
-	worktree, err := repository.Worktree()
-	if err != nil {
-		return nil, err
-	}
-
-	return gitHandler{worktree: worktree}, nil
+	worktree, err := repo.Worktree()
+	return gitHandler{repository: repo, worktree: worktree, auth: auth}, err
 }

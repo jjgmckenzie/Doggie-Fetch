@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/google/uuid"
 	"gofetch/postedimage"
 )
 
@@ -13,7 +14,7 @@ type GitHubHandler interface {
 }
 
 func (g gitHubHandler) makeGitBranchWithImage(image postedimage.Image) error {
-	return g.gitHandler.NewBranch()
+	return g.gitHandler.NewBranch(uuid.New().String())
 }
 
 func (g gitHubHandler) PostToGithub(image postedimage.Image) (string, error) {
@@ -21,13 +22,12 @@ func (g gitHubHandler) PostToGithub(image postedimage.Image) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	err = g.gitHandler.AddAndCommitAll("")
-	if err != nil {
-		return "", err
-	}
-	err = g.gitHandler.Push()
+	err = g.gitHandler.PushWithCommit("")
 	if err != nil {
 		return "", err
 	}
 	return "", nil
+}
+
+func (g gitHubHandler) AuthPullRequest() {
 }
