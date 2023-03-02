@@ -5,15 +5,22 @@ import (
 	"github.com/go-git/go-billy/v5/memfs"
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
+	"github.com/go-git/go-git/v5/plumbing/object"
 	"github.com/go-git/go-git/v5/plumbing/storer"
 	"github.com/go-git/go-git/v5/storage/memory"
 	"testing"
+	"time"
 )
 
 func initGitHandler(storage *memory.Storage, fs billy.Filesystem) (gitHandler, *git.Repository, *git.Worktree) {
 	repo, _ := git.Init(storage, fs)
 	worktree, _ := repo.Worktree()
-	worktree.Commit("initial commit", &git.CommitOptions{AllowEmptyCommits: true})
+	_, err := worktree.Commit("initial commit", &git.CommitOptions{
+		Author:            &object.Signature{Name: "test", Email: "test@localhost", When: time.Now()},
+		AllowEmptyCommits: true})
+	if err != nil {
+		println(err.Error())
+	}
 	return gitHandler{
 		worktree:   worktree,
 		repository: repo,
@@ -69,7 +76,7 @@ func TestGitHandlerAddsAllAndCommitsWithMessage(t *testing.T) {
 	}
 	// when a new file is made, and committed with a given commit message
 	fs.Create("Readme.md")
-	handler.addAndCommitAll("given commit message")
+	println(handler.addAndCommitAll("given commit message"))
 
 	// then a new commit is added,
 	if getAmountOfCommits(repo) != 2 {

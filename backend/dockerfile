@@ -1,0 +1,5 @@
+FROM gocv/opencv
+COPY . /go/src/backend
+WORKDIR /go/src/backend
+RUN ["go","build"]
+CMD ["go","test","-v"]
