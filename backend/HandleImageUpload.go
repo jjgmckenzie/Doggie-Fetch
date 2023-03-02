@@ -13,7 +13,11 @@ type ImageUploadHandler struct {
 }
 
 func (i ImageUploadHandler) processImage(image postedimage.Image) (int, any) {
-	if !i.complianceHandler.IsCompliant(image.Image) {
+	isCompliant, err := i.complianceHandler.IsCompliant(image.Image)
+	if err != nil {
+		return http.StatusInternalServerError, nil
+	}
+	if !isCompliant {
 		return http.StatusPreconditionFailed, nil
 	}
 	link, err := i.gitHubHandler.PostToGithub(image)

@@ -1,53 +1,59 @@
 package main
 
 import (
-	"fmt"
+	"github.com/wimspaargaren/yolov3"
 	"gocv.io/x/gocv"
 	"image"
 	"log"
 )
 
 type ComplianceHandler struct {
-	dogClassifier gocv.CascadeClassifier
-	humanDetector gocv.HOGDescriptor
+	neuralNetwork yolov3.Net
 }
 
-func (c ComplianceHandler) Close() error {
-	return c.dogClassifier.Close()
-}
-
-func (c ComplianceHandler) containsDog(image image.Image) bool {
-	println("converting image to be readable")
+func (c ComplianceHandler) getContents(image image.Image) ([]yolov3.ObjectDetection, error) {
+	var detection []yolov3.ObjectDetection = nil
 	imgMat, err := gocv.ImageToMatRGB(image)
-	println("converted image, searching for dog")
-	dogs := c.dogClassifier.DetectMultiScale(imgMat)
-	fmt.Println(len(dogs), " dogs found")
-	return err == nil && len(dogs) > 0
+	if err == nil {
+		detection, err = c.neuralNetwork.GetDetections(imgMat)
+	}
+	return detection, err
 }
 
-func (c ComplianceHandler) containsHuman(image image.Image) bool {
-	println("converting image to be readable")
-	imgMat, err := gocv.ImageToMatRGB(image)
-	println("converted image, searching for human")
-	humans := c.humanDetector.DetectMultiScale(imgMat)
-	fmt.Println(len(humans), " humans found at", humans[0].String())
-	return err == nil && len(humans) > 0
+func (c ComplianceHandler) contains(className string, objects []yolov3.ObjectDetection) bool {
+	for _, object := range objects {
+		if object.ClassName == className {
+			return true
+		}
+	}
+	return false
 }
 
-func (c ComplianceHandler) IsCompliant(image image.Image) bool {
-	return c.containsDog(image) && !c.containsHuman(image)
+func (c ComplianceHandler) containsDog(objects []yolov3.ObjectDetection) bool {
+	return c.contains("dog", objects)
+}
+
+func (c ComplianceHandler) containsHuman(objects []yolov3.ObjectDetection) bool {
+	return c.contains("person", objects)
+}
+
+func (c ComplianceHandler) IsCompliant(image image.Image) (bool, error) {
+	isCompliant := false
+	contents, err := c.getContents(image)
+	if err == nil {
+		isCompliant = c.containsDog(contents) && !c.containsHuman(contents)
+	}
+	return isCompliant, err
 }
 
 func NewComplianceHandler() ComplianceHandler {
-	classifier := gocv.NewCascadeClassifier()
-	classifier.Load("dog_face_haar_cascade/cascade.xml") // loads Haar cascade classifier
-	humanDetector := gocv.NewHOGDescriptor()
-	err := humanDetector.SetSVMDetector(gocv.HOGDefaultPeopleDetector())
+
+	yolonet, err := yolov3.NewNet("./yolov3/yolov3.weights", "./yolov3/yolov3.cfg", "./yolov3/coco.names")
 	if err != nil {
 		log.Fatalf("an error occured when setting up compliance handler: %s", err.Error())
 	}
+
 	return ComplianceHandler{
-		dogClassifier: classifier,
-		humanDetector: humanDetector,
+		neuralNetwork: yolonet,
 	}
 }

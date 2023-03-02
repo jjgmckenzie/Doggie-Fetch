@@ -1,15 +1,16 @@
 module gofetch
 
-go 1.20
+go 1.18
 
 require (
 	github.com/bradleyfalzon/ghinstallation/v2 v2.1.0
 	github.com/gin-gonic/gin v1.9.0
 	github.com/go-git/go-billy/v5 v5.4.0
 	github.com/go-git/go-git/v5 v5.5.2
-	github.com/google/go-github/v50 v50.1.0
+//	github.com/google/go-github/v50 v50.1.0
 	github.com/google/uuid v1.3.0
 	github.com/sunshineplan/imgconv v1.1.3
+	gocv.io/x/gocv v0.32.1
 	golang.org/x/image v0.5.0
 )
 
@@ -53,8 +54,8 @@ require (
 	github.com/sunshineplan/tiff v0.0.0-20220128141034-29b9d69bd906 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.9 // indirect
+	github.com/wimspaargaren/yolov3 v0.2.3 // indirect
 	github.com/xanzy/ssh-agent v0.3.3 // indirect
-	gocv.io/x/gocv v0.32.1 // indirect
 	golang.org/x/arch v0.0.0-20210923205945-b76863e36670 // indirect
 	golang.org/x/crypto v0.5.0 // indirect
 	golang.org/x/net v0.7.0 // indirect
