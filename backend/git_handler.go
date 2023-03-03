@@ -16,6 +16,7 @@ type Auth struct {
 type GitHandler interface {
 	NewBranch(name string) error
 	PushWithCommit(msg string) error
+	GetPath() string
 }
 
 type workTree interface {
@@ -33,6 +34,11 @@ type gitHandler struct {
 	worktree   workTree
 	repository repository
 	auth       Auth
+	path       string
+}
+
+func (g gitHandler) GetPath() string {
+	return g.path
 }
 
 func (g gitHandler) NewBranch(name string) error {
@@ -100,5 +106,5 @@ func NewGitHandler(path string, auth Auth) (GitHandler, error) {
 	}
 
 	worktree, err := repo.Worktree()
-	return gitHandler{repository: repo, worktree: worktree, auth: auth}, err
+	return gitHandler{repository: repo, worktree: worktree, auth: auth, path: path}, err
 }

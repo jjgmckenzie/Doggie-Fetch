@@ -33,7 +33,11 @@ func main() {
 		log.Fatalln(err)
 	}
 	println("git initialized.")
-	handler := ImageUploadHandler{builder: postedimage.New(), gitHubHandler: gitHubHandler{gitHandler: git}}
+	complianceHandler, err := NewComplianceHandler()
+	if err != nil {
+		log.Fatalf("an error occured when setting up compliance handler: %s", err.Error())
+	}
+	handler := ImageUploadHandler{builder: postedimage.New(), gitHubHandler: gitHubHandler{gitHandler: git}, complianceHandler: complianceHandler}
 	router := gin.Default()
 	router.POST("/upload", handler.HandleImageUpload)
 	log.Fatalln(router.Run(":8080"))

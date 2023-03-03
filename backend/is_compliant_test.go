@@ -17,7 +17,7 @@ func getSingleton() *ComplianceHandler {
 		defer lock.Unlock()
 		if complianceSingleton == nil {
 			fmt.Println("initializing compliance handler")
-			c := NewComplianceHandler()
+			c, _ := NewComplianceHandler()
 			complianceSingleton = &c
 		} else {
 			fmt.Println("using initialized compliance handler")

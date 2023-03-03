@@ -10,24 +10,25 @@ type gitHubHandler struct {
 }
 
 type GitHubHandler interface {
-	PostToGithub(image postedimage.Image) (string, error)
+	PostToGithub(image postedimage.Image, commitMessage string) (string, error)
 }
 
 func (g gitHubHandler) makeGitBranchWithImage(image postedimage.Image) error {
-	return g.gitHandler.NewBranch(uuid.New().String())
+	err := g.gitHandler.NewBranch(uuid.New().String())
+	if err == nil {
+		err = image.Save(g.gitHandler.GetPath())
+	}
+	return err
 }
 
-func (g gitHubHandler) PostToGithub(image postedimage.Image) (string, error) {
+func (g gitHubHandler) PostToGithub(image postedimage.Image, commitMessage string) (string, error) {
 	err := g.makeGitBranchWithImage(image)
 	if err != nil {
 		return "", err
 	}
-	err = g.gitHandler.PushWithCommit("")
+	err = g.gitHandler.PushWithCommit(commitMessage)
 	if err != nil {
 		return "", err
 	}
 	return "", nil
-}
-
-func (g gitHubHandler) AuthPullRequest() {
 }

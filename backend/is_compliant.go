@@ -4,7 +4,6 @@ import (
 	"github.com/wimspaargaren/yolov3"
 	"gocv.io/x/gocv"
 	"image"
-	"log"
 )
 
 type ComplianceHandler struct {
@@ -46,14 +45,11 @@ func (c ComplianceHandler) IsCompliant(image image.Image) (bool, error) {
 	return isCompliant, err
 }
 
-func NewComplianceHandler() ComplianceHandler {
+func NewComplianceHandler() (ComplianceHandler, error) {
 
 	yolonet, err := yolov3.NewNet("./yolov3/yolov3.weights", "./yolov3/yolov3.cfg", "./yolov3/coco.names")
-	if err != nil {
-		log.Fatalf("an error occured when setting up compliance handler: %s", err.Error())
-	}
 
 	return ComplianceHandler{
 		neuralNetwork: yolonet,
-	}
+	}, err
 }
