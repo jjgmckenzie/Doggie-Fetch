@@ -7,14 +7,14 @@ import (
 )
 
 type Image struct {
-	Name, Breed string
-	Image       image.Image
+	Name, Breed, nameFormatted string
+	Image                      image.Image
 }
 
 func (i Image) Save(directory string) error {
 	subDirectory := directory + i.Breed
 
-	destination := subDirectory + "/" + i.Name + ".jpg"
+	destination := subDirectory + "/" + i.nameFormatted + ".jpg"
 	f, err := os.Create(destination)
 	if err == nil {
 		err = imgconv.Write(f, i.Image, &imgconv.FormatOption{

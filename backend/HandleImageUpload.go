@@ -4,7 +4,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"gofetch/postedimage"
 	"net/http"
-	"time"
 )
 
 type ImageUploadHandler struct {
@@ -29,7 +28,7 @@ func (i ImageUploadHandler) processImage(image postedimage.Image) (int, any) {
 }
 
 func (i ImageUploadHandler) getPostedImage(c *gin.Context) (postedimage.Image, error) {
-	name := "gofetchbot_" + c.GetString("name") + "_" + time.Now().UTC().Format(time.RFC3339)
+	name := c.GetString("name")
 	breed := c.GetString("breed")
 	base64img := c.GetString("image")
 	return i.builder.Build(name, breed, base64img)

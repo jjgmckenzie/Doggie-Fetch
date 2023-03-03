@@ -27,7 +27,7 @@ func TestSaveImage(t *testing.T) {
 	imgFile, _ := os.Open(loadDir)
 	img, _, _ := image.Decode(imgFile)
 
-	newImage := Image{Image: img, Breed: "test_images", Name: "test_saved_image"}
+	newImage := Image{Image: img, Breed: "test_images", nameFormatted: "test_saved_image"}
 	// when asked to save the image to a valid directory
 	err := newImage.Save("../")
 	// then there will not be an error,
