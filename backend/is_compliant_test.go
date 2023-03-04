@@ -17,7 +17,7 @@ func getSingleton() *ComplianceHandler {
 		defer lock.Unlock()
 		if complianceSingleton == nil {
 			fmt.Println("initializing compliance handler")
-			c, _ := NewComplianceHandler()
+			c, _ := NewComplianceHandler("./yolov3/yolov3.weights", "./yolov3/yolov3.cfg", "./yolov3/coco.names")
 			complianceSingleton = &c
 		} else {
 			fmt.Println("using initialized compliance handler")

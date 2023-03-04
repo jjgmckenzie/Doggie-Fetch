@@ -20,7 +20,7 @@ type mockImagePost struct {
 
 func TestEndToEnd(t *testing.T) {
 	go func() {
-		_ = run("test")
+		_ = DefaultRunner(":8000").run("test")
 	}()
 	time.Sleep(2 * time.Second) // wait for Gin to Initialize.
 	loadImage, _ := os.ReadFile("./test_images/large_dog_image.jpg")
@@ -31,7 +31,7 @@ func TestEndToEnd(t *testing.T) {
 		Image: imageText,
 	}
 	jsonMock, _ := json.Marshal(mock)
-	resp, err := http.Post("http://localhost:8080/upload", "application/json", bytes.NewReader(jsonMock))
+	resp, err := http.Post("http://localhost:8000/upload", "application/json", bytes.NewReader(jsonMock))
 	if err != nil {
 		println(err.Error())
 		t.Fail()

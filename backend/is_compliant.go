@@ -50,9 +50,9 @@ func (c ComplianceHandler) IsCompliant(image image.Image) (bool, error) {
 	return isCompliant, err
 }
 
-func NewComplianceHandler() (ComplianceHandler, error) {
+func NewComplianceHandler(weightPath string, configPath string, cocoNamePath string) (ComplianceHandler, error) {
 
-	yolonet, err := yolov3.NewNet("./yolov3/yolov3.weights", "./yolov3/yolov3.cfg", "./yolov3/coco.names")
+	yolonet, err := yolov3.NewNet(weightPath, configPath, cocoNamePath)
 
 	return ComplianceHandler{
 		neuralNetwork: yolonet,
