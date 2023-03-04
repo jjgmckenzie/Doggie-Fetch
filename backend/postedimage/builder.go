@@ -30,13 +30,21 @@ func asASCII(name string) string {
 	return re.ReplaceAllLiteralString(name, "")
 }
 
+func truncate(name string) string {
+	if len(name) > 20 {
+		name = name[:20]
+	}
+	return name
+}
+
 func filter(name string) (string, error) {
 	var err error
 	asciiName := asASCII(name)
 	if goaway.IsProfane(asciiName) { // really hate that this has to be done, but the risk outweighs the false negatives.
 		err = errors.New("dog's name is profane :(")
 	}
-	return asciiName, err
+	truncatedAsciiName := truncate(name)
+	return truncatedAsciiName, err
 }
 
 func formatted(name string) string {

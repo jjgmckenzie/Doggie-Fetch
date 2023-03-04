@@ -11,7 +11,7 @@ type mockDecoder struct {
 	err string
 }
 
-func (m mockDecoder) decode(base64 string) (image.Image, error) {
+func (m mockDecoder) decode(_ string) (image.Image, error) {
 	if m.err != "" {
 		return nil, errors.New(m.err)
 	}
@@ -48,6 +48,15 @@ func TestBuilderCallsResizer(t *testing.T) {
 	mockResizer := mockResizer{mockResizedImg}
 	returnedImage, _ := builder{decoder: mockDecoder{}, resizer: mockResizer}.Build("", "", "")
 	if returnedImage.Image.At(0, 0) != mockResizedImg.At(0, 0) {
+		t.Fail()
+	}
+}
+
+func TestTruncateString(t *testing.T) {
+	if truncate("test") != "test" {
+		t.Fail()
+	}
+	if len(truncate("abcdefghijklmnopqrstuvwxyz")) != 20 {
 		t.Fail()
 	}
 }
