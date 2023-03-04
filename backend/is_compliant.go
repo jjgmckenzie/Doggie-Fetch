@@ -10,6 +10,10 @@ type ComplianceHandler struct {
 	neuralNetwork yolov3.Net
 }
 
+type IsCompliantChecker interface {
+	IsCompliant(image image.Image) (bool, error)
+}
+
 func (c ComplianceHandler) getContents(image image.Image) ([]yolov3.ObjectDetection, error) {
 	var detection []yolov3.ObjectDetection = nil
 	imgMat, err := gocv.ImageToMatRGB(image)
