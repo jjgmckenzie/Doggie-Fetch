@@ -2,8 +2,11 @@ package postedimage
 
 import (
 	"github.com/sunshineplan/imgconv"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 	"image"
 	"os"
+	"strings"
 )
 
 type Image struct {
@@ -24,4 +27,22 @@ func (i Image) Save(directory string) error {
 		})
 	}
 	return err
+}
+
+func capitalize(s string) string {
+	return cases.Title(language.English).String(s)
+}
+
+func formatBreed(breed string) string {
+	breedString := strings.Split(breed, "-")
+	hasSubBreed := len(breedString) > 1
+	if !hasSubBreed {
+		return breedString[0]
+	}
+	return breedString[1] + " " + breedString[0]
+}
+
+func (i Image) GetCommitMessage() string {
+	breed := capitalize(formatBreed(i.Breed))
+	return "GOFETCHBOT: Adds " + capitalize(i.Name) + ", a user submitted " + (breed)
 }

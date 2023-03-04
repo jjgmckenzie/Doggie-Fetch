@@ -20,7 +20,7 @@ func (i ImageUploadHandler) processImage(image postedimage.Image) (int, any) {
 	if !isCompliant {
 		return http.StatusPreconditionFailed, nil
 	}
-	link, err := i.gitHubHandler.PostToGithub(image, image.Name)
+	link, err := i.gitHubHandler.PostToGithub(image, image.GetCommitMessage())
 	if err != nil {
 		return http.StatusInternalServerError, nil
 	}
