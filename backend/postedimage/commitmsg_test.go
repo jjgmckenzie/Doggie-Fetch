@@ -27,7 +27,7 @@ func TestCommitMessage(t *testing.T) {
 	}
 	// when the commit message is requested
 	actual := img.GetCommitMessage()
-	expected := "GOFETCHBOT: Adds Maya, a user submitted Pyrenees"
+	expected := "Adds a Pyrenees named Maya"
 	// then it matches the expected commit message
 	if actual != expected {
 		t.Fail()

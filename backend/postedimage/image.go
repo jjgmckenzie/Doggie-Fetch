@@ -44,5 +44,5 @@ func formatBreed(breed string) string {
 
 func (i Image) GetCommitMessage() string {
 	breed := capitalize(formatBreed(i.Breed))
-	return "GOFETCHBOT: Adds " + capitalize(i.Name) + ", a user submitted " + (breed)
+	return "Adds a " + breed + " named " + capitalize(i.Name)
 }
