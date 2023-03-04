@@ -11,10 +11,7 @@ import (
 	"strings"
 )
 
-type base64Decoder struct {
-}
-
-func (i base64Decoder) decode(encodedImage string) (image.Image, error) {
+func decode(encodedImage string) (image.Image, error) {
 	index := strings.Index(encodedImage, ",")
 	if index < 0 {
 		return nil, image.ErrFormat

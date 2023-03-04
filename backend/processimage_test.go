@@ -1,11 +1,14 @@
 package main
 
 import (
+	"context"
 	"errors"
+	"gofetch/ghapp"
 	"gofetch/postedimage"
 	"image"
 	"net/http"
 	"testing"
+	"time"
 )
 
 type mockCompliantChecker struct {
@@ -22,8 +25,9 @@ type mockGithubHandler struct {
 	err  error
 }
 
-func (m mockGithubHandler) PostToGithub(_ postedimage.Image, _ string) (string, error) {
+func (m mockGithubHandler) MakePullRequest(_ context.Context, _ ghapp.FileToCommit) (string, error) {
 	return m.link, m.err
+
 }
 
 type mockBuilder struct {
@@ -40,7 +44,7 @@ func TestProcessImageReturnsInternalServerErrorIfComplianceCheckerErrors(t *test
 	imgHandler := ImageUploadHandler{
 		complianceHandler: mockCompliantChecker{returnErr: errors.New("error")}}
 	// when the handler processes an image, and the compliance checker returns an error
-	httpReturn, _ := imgHandler.processImage(postedimage.Image{})
+	httpReturn, _ := imgHandler.processImage(context.Background(), postedimage.Image{})
 	// then an internal server error will be returned.
 	if httpReturn != http.StatusInternalServerError {
 		t.Fail()
@@ -52,7 +56,7 @@ func TestProcessImageReturnsPreconditionFailedIfNotCompliant(t *testing.T) {
 	imgHandler := ImageUploadHandler{
 		complianceHandler: mockCompliantChecker{returnBool: false}}
 	// when the handler processes an image, and the compliance checker returns it as not compliant
-	httpReturn, _ := imgHandler.processImage(postedimage.Image{})
+	httpReturn, _ := imgHandler.processImage(context.Background(), postedimage.Image{})
 	// then a precondition failed error will be returned.
 	if httpReturn != http.StatusPreconditionFailed {
 		t.Fail()
@@ -63,9 +67,9 @@ func TestProcessImageReturnsServerErrorIfCannotPostToGithub(t *testing.T) {
 	// given an image upload handler with a compliance checker that passes the image, but a github handler that errors
 	imgHandler := ImageUploadHandler{
 		complianceHandler: mockCompliantChecker{returnBool: true},
-		gitHubHandler:     mockGithubHandler{err: errors.New("error")}}
+		app:               mockGithubHandler{err: errors.New("error")}}
 	// when the handler processes an image, and the github handler returns an error
-	httpReturn, _ := imgHandler.processImage(postedimage.Image{})
+	httpReturn, _ := imgHandler.processImage(context.Background(), postedimage.Image{})
 	// then an internal server error will be returned.
 	if httpReturn != http.StatusInternalServerError {
 		t.Fail()
@@ -78,9 +82,9 @@ func TestProcessImageHappyPath(t *testing.T) {
 	expectedLink := "localhost:1337/YourPullRequest"
 	imgHandler := ImageUploadHandler{
 		complianceHandler: mockCompliantChecker{returnBool: true},
-		gitHubHandler:     mockGithubHandler{link: expectedLink}}
+		app:               mockGithubHandler{link: expectedLink}}
 	// when the handler processes an image, and the github handler does not error
-	httpReturn, link := imgHandler.processImage(postedimage.Image{})
+	httpReturn, link := imgHandler.processImage(context.Background(), postedimage.Image{})
 	// then http accepted will be returned, alongside the expected link to the pull request.
 	if httpReturn != http.StatusAccepted || link != expectedLink {
 		t.Fail()
@@ -92,8 +96,24 @@ type httpContextMock struct {
 	jsonCalled         bool
 }
 
-func (h *httpContextMock) GetString(_ string) string {
-	return ""
+func (h *httpContextMock) Deadline() (deadline time.Time, ok bool) {
+	return
+}
+
+func (h *httpContextMock) Done() <-chan struct{} {
+	return nil
+}
+
+func (h *httpContextMock) Err() error {
+	return nil
+}
+
+func (h *httpContextMock) Value(_ any) any {
+	return nil
+}
+
+func (h *httpContextMock) BindJSON(_ any) error {
+	return nil
 }
 
 func (h *httpContextMock) AbortWithStatus(code int) {

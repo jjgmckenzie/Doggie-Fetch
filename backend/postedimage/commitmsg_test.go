@@ -26,7 +26,7 @@ func TestCommitMessage(t *testing.T) {
 		Breed: "pyrenees",
 	}
 	// when the commit message is requested
-	actual := img.GetCommitMessage()
+	actual := img.CommitMessage()
 	expected := "Adds a Pyrenees named Maya"
 	// then it matches the expected commit message
 	if actual != expected {

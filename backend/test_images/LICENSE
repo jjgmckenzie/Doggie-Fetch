@@ -18,4 +18,9 @@ test_image.*:
     author: https://commons.wikimedia.org/wiki/User:Denelson83
     license: public domain
 
+large_dog_image.jpg:
+    link: https://www.flickr.com/photos/leisergu/2873249326
+    author:https://www.flickr.com/photos/leisergu/
+    license: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/deed.en)
+
 images retrieved on 2022/02/27 @ 00:00 UTC

@@ -99,6 +99,23 @@ export default function UploadPooch(props:Props){
         </div> )
     },[props])
 
+    const postDog = useCallback(()=>{
+            fetch("/upload",{
+                method: "POST",
+                headers: {
+                    "Content-Type" : "application/json",
+                },
+                body:JSON.stringify({
+                    name:"Test",
+                    breed:props.breedUploaded[0].value.replace("/","-"),
+                    image:props.image,
+                })
+            }).then(res => {
+                console.log(JSON.stringify(res))
+            })
+        }
+        ,[props.breedUploaded, props.image])
+
     const submitDogForm = useCallback( () => {
         return (
             <div className="flex flex-col">
@@ -118,11 +135,11 @@ export default function UploadPooch(props:Props){
                 </div>
                 <div className="flex justify-between mt-1 sm:mt-2">
                     <button className="sm:text-lg text-blue-600 border-2 font-bold px-1 rounded-md " onClick={()=>{setAcceptedTerms(false)}}>Back</button>
-                    <button className="sm:text-lg bg-blue-600 text-white font-bold px-1 rounded-md " onClick={()=>{}}>Submit</button>
+                    <button className="sm:text-lg bg-blue-600 text-white font-bold px-1 rounded-md " onClick={postDog}>Submit</button>
                 </div>
             </div>
         )
-    },[FileBox, props, uploadButton])
+    },[FileBox, postDog, props, uploadButton])
 
     const getBody = useCallback(()=>{
        if(!acceptedTerms){

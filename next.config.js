@@ -13,7 +13,15 @@ const nextConfig = {
         pathname:'/**'
       }
     ]
-  }
+  },
+  async rewrites() {
+      return [
+        {
+          source: '/upload/:path*',
+          destination: 'http://localhost:8080/upload/:path*'
+        }
+      ]
+    }
 }
 
 module.exports = nextConfig

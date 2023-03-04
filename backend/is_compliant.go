@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/sunshineplan/imgconv"
 	"github.com/wimspaargaren/yolov3"
 	"gocv.io/x/gocv"
 	"image"
@@ -42,7 +43,7 @@ func (c ComplianceHandler) containsHuman(objects []yolov3.ObjectDetection) bool 
 
 func (c ComplianceHandler) IsCompliant(image image.Image) (bool, error) {
 	isCompliant := false
-	contents, err := c.getContents(image)
+	contents, err := c.getContents(imgconv.Resize(image, &imgconv.ResizeOption{Width: 400}))
 	if err == nil {
 		isCompliant = c.containsDog(contents) && !c.containsHuman(contents)
 	}

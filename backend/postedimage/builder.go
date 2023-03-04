@@ -8,21 +8,11 @@ import (
 	"time"
 )
 
-type resizer interface {
-	resize(img image.Image) image.Image
-}
-
-type decoder interface {
-	decode(string) (image.Image, error)
-}
-
 type Builder interface {
 	Build(name, breed, base64img string) (Image, error)
 }
 
 type builder struct {
-	decoder decoder
-	resizer resizer
 }
 
 func asASCII(name string) string {
@@ -55,7 +45,7 @@ func (b builder) Build(name, breed, base64img string) (Image, error) {
 	var img image.Image
 	filteredName, err := filter(name)
 	if err == nil {
-		img, err = b.decodeAndResize(base64img)
+		img, err = decode(base64img)
 	}
 	return Image{
 		Name:          filteredName,
@@ -65,17 +55,6 @@ func (b builder) Build(name, breed, base64img string) (Image, error) {
 	}, err
 }
 
-func (b builder) decodeAndResize(encodedImage string) (image.Image, error) {
-	img, err := b.decoder.decode(encodedImage)
-	if err == nil {
-		img = b.resizer.resize(img)
-	}
-	return img, err
-}
-
 func New() Builder {
-	return builder{
-		decoder: base64Decoder{},
-		resizer: imgConvResizer{maxSize: 1080},
-	}
+	return builder{}
 }

@@ -8,10 +8,9 @@ import (
 
 func TestDecoderErrorsOnInvalidString(t *testing.T) {
 	// given the image decoder and an invalid string
-	decoder := base64Decoder{}
 	invalidString := ""
 	// when the decoder is given an invalid string
-	_, err := decoder.decode(invalidString)
+	_, err := decode(invalidString)
 	// then the decoder will return an error
 	if err == nil {
 		t.Fail()
@@ -28,10 +27,9 @@ func encodeTestImage(extension string) string {
 
 func canDecodeFormat(t *testing.T, format string) {
 	// given the decoder and a valid encoded image
-	decoder := base64Decoder{}
 	base64image := encodeTestImage(format)
 	// when the decoder is given a valid encoded image
-	img, err := decoder.decode(base64image)
+	img, err := decode(base64image)
 	// then the decoder will not error,
 	if err != nil {
 		println(base64image)
