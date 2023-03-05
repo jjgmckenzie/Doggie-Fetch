@@ -28,8 +28,11 @@ interface Props{
 }
 export default function DogController(props:Props){
     const [optionsPoppedUp, setOptionsPoppedUp] = useState(false)
+    const [uploadingPooch,setUploadingPooch] = useState(false)
+    const [dogName,setDogName] = useState("")
     const [uploadPoppedUp, setUploadPoppedUp] = useState(false)
     const [breedUploaded,setBreedUploaded] = useState<Breed[]>([])
+    const [response,setResponse] = useState(0)
 
     const FilterPanel = useCallback(()=>{
         if(optionsPoppedUp) {
@@ -47,23 +50,27 @@ export default function DogController(props:Props){
         }
         if(uploadPoppedUp) {
             return (
-                <UploadPooch breedList={props.breedList} breedUploaded={breedUploaded} loading={props.loading} setBreedUploaded={setBreedUploaded} setFilteredBreeds={props.setFilteredBreeds} image={props.image} setFile={props.setFile} setIsAcceptingFiles={props.setIsAcceptingFiles}/>
+                <UploadPooch breedList={props.breedList} breedUploaded={breedUploaded} loading={props.loading} setBreedUploaded={setBreedUploaded} setFilteredBreeds={props.setFilteredBreeds} image={props.image} setFile={props.setFile} setIsAcceptingFiles={props.setIsAcceptingFiles} loadingPooch={uploadingPooch} setIsLoadingPooch={setUploadingPooch} dogName={dogName} setDogName={setDogName} response={response} setResponse={setResponse}/>
             )
         }
         return (
             <>
             </>
         )
-    },[breedUploaded, optionsPoppedUp, props, uploadPoppedUp])
+    },[breedUploaded, dogName, optionsPoppedUp, props, response, uploadPoppedUp, uploadingPooch])
+    const ClickAway = useCallback(()=>{
+        if(!uploadingPooch){
+            setUploadPoppedUp(false)
+            setOptionsPoppedUp(false)
+        }
+    },[uploadingPooch])
 
     return(
-        <div className="fixed bottom-0 right-0 left-0 w-min mx-auto z-10 mb-3 sm:mb-5">
-            <ClickAwayListener onClickAway={()=>
-            {setUploadPoppedUp(false)
-            setOptionsPoppedUp(false)}}>
+        <div className="fixed bottom-0 right-0 left-0 w-min mx-auto z-10 mb-1 sm:mb-5">
+            <ClickAwayListener onClickAway={ClickAway}>
                 <div className="pointer-events-none">
                     {FilterPanel()}
-                    <div className="bg-white bg-opacity-25 rounded-lg backdrop-blur-sm shadow p-3 flex w-min mx-auto">
+                    <div className="bg-white bg-opacity-25 rounded-lg backdrop-blur-sm shadow p-2 sm:p-4 flex w-min mx-auto">
                         <DogControlPanel setOptionsPoppedUp={setOptionsPoppedUp} optionsPoppedUp={optionsPoppedUp} uploadPoppedUp={uploadPoppedUp} setUploadPoppedUp={setUploadPoppedUp} />
                         <div className="mt-auto w-48">
                             <DirectionControl setDirection={props.setDirection}/>

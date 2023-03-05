@@ -2,6 +2,7 @@
 const nextConfig = {
   experimental: {
     appDir: true,
+    outputStandalone:true,
   },
   images:{
     formats: ['image/avif', 'image/webp'],
@@ -17,8 +18,8 @@ const nextConfig = {
   async rewrites() {
       return [
         {
-          source: '/upload/:path*',
-          destination: 'http://localhost:8080/upload/:path*'
+          source: '/upload',
+          destination: 'http://localhost:8080/upload'
         }
       ]
     }

@@ -12,11 +12,9 @@ export default function Home() {
     const [animSpeed,setAnimSpeed] = useState(30000)
     const [imgSize,setImgSize] = useState(300)
     const [breedList,setBreedList] = useState<Breed[]>([])
-    const [loading,setLoading] = useState(true)
+    const [loading,setLoading] = useState(false)
     const [image, setImage] = useState<string|null>(null);
     const [isAcceptingFiles, setIsAcceptingFiles] = useState(false)
-
-
 
     const setFile = useCallback((file:File|null)=>{
         if(file == null){
@@ -97,6 +95,7 @@ export default function Home() {
             <DropFiles isAcceptingFiles={isAcceptingFiles} setFile={setFile}/>
             <DogController setDirection={setDirection} setFilteredBreeds={setFilteredBreeds} filteredBreeds={filteredBreeds} direction={direction} setAnimSpeed={setAnimSpeed} animSpeed={animSpeed} imgSize={imgSize} setImgSize={setImgSize} loading={loading} breedList={breedList} image={image} setFile={setFile} setIsAcceptingFiles={setIsAcceptingFiles}/>
             <ManyDogs dogCount={6} class={animDirection} filteredBreeds={filteredBreeds} direction={direction} animSpeed={animSpeed} imgSize={imgSize} loading={loading} setLoading={setLoading}/>
+            <span className="mx-auto left-0 right-0 bottom-0 absolute w-min" id="confettiReward"/>
         </main>
     )
 }
