@@ -1,38 +1,35 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Go Fetch! ( [Live](https://gofetch.jjgmckenzie.ca/) )
 
-## Getting Started
+GoFetch is a web application written in NextJS / React, and styled with TailwindCSS; It allows users to view a stream of images from the [Dog CEO API](https://dog.ceo/dog-api/), being able to sort by breed.  Images are converted to AVIF & WebP by NextJS, and cached locally, so as to be considerate and keep excessive calls to the 3rd party API to a minimum.
 
-First, run the development server:
+![functionality: view dogs, upload dogs](./examples/phone-mockups.png)
+## Pet-Form as a Service (PaaS)
+Additionally, it connects to the backend, written in Go, to "GoFetchBot", a github application that accepts user submitted images of their dogs; scans them with a Neural Network for compliance (images must contain a dog, and may not contain a human, for GDPR reasons). If the image is acceptable, it creates a pull request with the image as a commit, for final human approval.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-```
+To reiterate: that makes it a Pet Form as a Service, using Neural Networks.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+![makes pull requests](./examples/github-pull-request.png)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+![uses neural networks](./examples/neural-network-rejection.png)
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+## Technical Details
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+- Golang, with 100% test coverage, tested with go test, using TDD & sticking to a "Given When Then" syntax 
+- Some limited End to End Testing
+- using GoCV and Yolov3 neural network
+- NextJS / React, styled with TailwindCSS
+-  Deployed to a personally administered docker server
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+### Forking 
 
-## Learn More
+I don't expect much attention on this repo; but this should be fairly easy to fork. The main requisite is either setting up openCV, or being comfortable using a docker container where openCV has been installed. 
+The tests were written with a mock github repo (that has a LOT of closed PRs), so you will have to set up an application to get the same test coverage. Forker Beware: 
+I am not proud of some of the React code, but I am pretty proud of the Go code, so...
 
-To learn more about Next.js, take a look at the following resources:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Other
+Go ahead and shoot me an email or make an issue or reach out on my socials if this is interesting to you or you want to chat!
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+### License
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+GPLv3
